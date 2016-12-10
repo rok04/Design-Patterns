@@ -1,5 +1,8 @@
 package com.FactoryDesignPattern;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * 
  * @author ryad22
@@ -9,9 +12,9 @@ package com.FactoryDesignPattern;
  *         product from factory . (In this case I am Client ) Example :- Google
  *         Search API . I am using this API and i don't know how to initiate any
  *         type of search class object . I just want one object of any specific
- *         search type. (Let's say we have many type of searches . Example:- Person
- *         Search , News Search ,Image Search , Video Search) So in this case
- *         Google Search API will use Factory Design Pattern
+ *         search type. (Let's say we have many type of searches . Example:-
+ *         Person Search , News Search ,Image Search , Video Search) So in this
+ *         case Google Search API will use Factory Design Pattern
  *
  *         This is useful when there are multiple products and we don't want
  *         that client needs to know how to initiate product object. So client
@@ -51,8 +54,30 @@ package com.FactoryDesignPattern;
  */
 public class GoogleSearchFactory {
 
-	public GoogleSearchFactory() {
-		super();
+	static Map<String, ISearchable> searchEnginesMap = SingletonInit.mapInstance;
+
+	/**
+	 * 
+	 * Part of Singleton Pattern
+	 * 
+	 */
+	public static GoogleSearchFactory getInstance() {
+		return SingletonInit.googleSearchFactoryInstance;
+	}
+
+	/**
+	 * Private Constructor Part of singleton Design
+	 */
+	private GoogleSearchFactory() {
+		// TODO Auto-generated constructor stub
+	}
+
+	/**
+	 * 
+	 * 
+	 */
+	public void registerSearchEngine(String name, ISearchable searchAble) {
+		searchEnginesMap.put(name, searchAble);
 	}
 
 	/**
@@ -62,8 +87,30 @@ public class GoogleSearchFactory {
 	 * 
 	 * @param name
 	 */
-	public void getProduct(String name) {
+
+	public ISearchable getProduct(String name) {
+		ISearchable searchEngine = null;
+		System.out.println(searchEnginesMap.size());
+		try {
+			if (searchEnginesMap.get(name) == null)
+				throw new NoClassDefFoundError();
+			searchEngine = searchEnginesMap.get(name).clone();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return searchEngine;
 
 	}
 
+	/**
+	 * 
+	 * Singleton design Part The best thing is that this method will be called
+	 * only once No problem with Multi threading
+	 * 
+	 */
+	private static class SingletonInit {
+		private static final GoogleSearchFactory googleSearchFactoryInstance = new GoogleSearchFactory();
+		private static Map<String, ISearchable> mapInstance = new HashMap<String, ISearchable>();
+	}
 }
